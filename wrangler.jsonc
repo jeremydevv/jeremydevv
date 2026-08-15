@@ -1,0 +1,37 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "jeremy-portfolio",
+  "main": "src/index.js",
+  "compatibility_date": "2026-08-15",
+  "account_id": "83952a1be987e4a12647732861a60925",
+  "workers_dev": true,
+  "preview_urls": true,
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "SITE_URL": "https://jeremy.md"
+  },
+  "env": {
+    "production": {
+      "name": "jeremy-portfolio",
+      "workers_dev": false,
+      "preview_urls": false,
+      "routes": [
+        {
+          "pattern": "jeremy.md",
+          "zone_name": "jeremy.md",
+          "custom_domain": true
+        },
+        {
+          "pattern": "www.jeremy.md",
+          "zone_name": "jeremy.md",
+          "custom_domain": true
+        }
+      ],
+      "vars": {
+        "SITE_URL": "https://jeremy.md"
+      }
+    }
+  }
+}

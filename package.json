@@ -1,0 +1,17 @@
+{
+  "name": "jeremy-portfolio",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "check": "wrangler deploy --env=\"\" --dry-run",
+    "deploy": "wrangler deploy --env=\"\"",
+    "deploy:production": "wrangler deploy --env production",
+    "dev": "wrangler dev --env=\"\""
+  },
+  "devDependencies": {
+    "wrangler": "4.123.0"
+  }
+}
