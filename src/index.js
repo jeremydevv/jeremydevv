@@ -32,6 +32,7 @@ function pageHtml() {
       --green: #72c76e;
       --yellow: #d7b65d;
       --red: #d96b5f;
+      --shadow: rgba(0, 0, 0, 0.34);
     }
 
     * {
@@ -80,18 +81,39 @@ function pageHtml() {
       left: 50%;
       top: 50%;
       width: clamp(340px, 31vw, 560px);
-      min-height: clamp(250px, 31vh, 380px);
+      height: clamp(250px, 31vh, 380px);
       border: 1px solid rgba(236, 232, 216, 0.14);
       border-radius: 10px;
       background: var(--terminal);
-      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34);
+      box-shadow: 0 18px 42px var(--shadow);
       transform: translate(-50%, -50%);
       overflow: hidden;
       user-select: none;
+      transition: box-shadow 150ms ease, opacity 120ms ease;
     }
 
     .terminal.is-dragging {
       cursor: grabbing;
+      transition: none;
+    }
+
+    .terminal.is-focused {
+      border-color: rgba(236, 232, 216, 0.2);
+      box-shadow: 0 22px 56px rgba(0, 0, 0, 0.42);
+    }
+
+    .terminal.is-minimized {
+      height: 36px;
+      min-height: 36px;
+    }
+
+    .terminal.is-minimized .shell {
+      display: none;
+    }
+
+    .terminal.is-closed {
+      opacity: 0;
+      pointer-events: none;
     }
 
     .titlebar {
@@ -116,10 +138,17 @@ function pageHtml() {
     }
 
     .light {
+      appearance: none;
       width: 12px;
       height: 12px;
+      padding: 0;
+      border: 0;
       border-radius: 50%;
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.22);
+      color: rgba(40, 28, 22, 0);
+      font: 700 8px/12px ui-sans-serif, system-ui, sans-serif;
+      text-align: center;
+      cursor: default;
     }
 
     .light.red {
@@ -134,6 +163,31 @@ function pageHtml() {
       background: var(--green);
     }
 
+    .lights:hover .light,
+    .light:focus-visible {
+      color: rgba(40, 28, 22, 0.74);
+      outline: none;
+    }
+
+    .light::before {
+      display: block;
+    }
+
+    .light.red::before {
+      content: "x";
+      transform: translateY(-0.5px);
+    }
+
+    .light.yellow::before {
+      content: "-";
+      transform: translateY(-1px);
+    }
+
+    .light.green::before {
+      content: "+";
+      transform: translateY(-0.5px);
+    }
+
     .title {
       justify-self: center;
       color: #c7c1ac;
@@ -141,9 +195,11 @@ function pageHtml() {
     }
 
     .shell {
+      height: calc(100% - 36px);
       padding: 18px 20px 22px;
       font-size: clamp(0.78rem, 1.05vw, 0.96rem);
       line-height: 1.68;
+      overflow: auto;
       white-space: pre-wrap;
     }
 
@@ -192,7 +248,7 @@ function pageHtml() {
 
       .terminal {
         width: min(88vw, 420px);
-        min-height: 32vh;
+        height: 32vh;
       }
 
       .shell {
@@ -203,12 +259,12 @@ function pageHtml() {
 </head>
 <body>
   <main class="desktop" aria-label="Movable desktop portfolio">
-    <section class="terminal" id="terminal" aria-label="Jeremy portfolio terminal">
+    <section class="terminal is-focused" id="terminal" aria-label="Jeremy portfolio terminal">
       <header class="titlebar" id="titlebar" aria-label="Drag terminal window">
-        <div class="lights" aria-hidden="true">
-          <span class="light red"></span>
-          <span class="light yellow"></span>
-          <span class="light green"></span>
+        <div class="lights" aria-label="Window controls">
+          <button class="light red" type="button" data-window-action="close" aria-label="Close"></button>
+          <button class="light yellow" type="button" data-window-action="minimize" aria-label="Minimize"></button>
+          <button class="light green" type="button" data-window-action="zoom" aria-label="Zoom"></button>
         </div>
         <div class="title">jeremy.md - zsh</div>
         <div aria-hidden="true"></div>
@@ -231,6 +287,9 @@ function pageHtml() {
     const terminal = document.getElementById("terminal");
     const titlebar = document.getElementById("titlebar");
     let drag = null;
+    let savedRect = null;
+    let isZoomed = false;
+    let isMinimized = false;
 
     function clamp(value, min, max) {
       return Math.min(Math.max(value, min), max);
@@ -254,7 +313,100 @@ function pageHtml() {
       terminal.style.top = clamp(y, bounds.minY, Math.max(bounds.minY, bounds.maxY)) + "px";
     }
 
+    function rectSnapshot() {
+      const rect = terminal.getBoundingClientRect();
+      return {
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height
+      };
+    }
+
+    function setRect(rect) {
+      terminal.style.transform = "none";
+      terminal.style.left = rect.left + "px";
+      terminal.style.top = rect.top + "px";
+      terminal.style.width = rect.width + "px";
+      terminal.style.height = rect.height + "px";
+      placeAt(rect.left, rect.top);
+    }
+
+    function focusWindow() {
+      terminal.classList.add("is-focused");
+    }
+
+    function restoreWindow() {
+      terminal.classList.remove("is-closed", "is-minimized", "is-zoomed");
+      isMinimized = false;
+      isZoomed = false;
+      if (savedRect) setRect(savedRect);
+      focusWindow();
+    }
+
+    function closeWindow() {
+      terminal.classList.add("is-closed");
+    }
+
+    function minimizeWindow() {
+      if (terminal.classList.contains("is-closed")) return;
+      if (!isMinimized) savedRect = rectSnapshot();
+      isZoomed = false;
+      isMinimized = true;
+      terminal.classList.remove("is-zoomed");
+      terminal.classList.add("is-minimized");
+      setRect({
+        left: 18,
+        top: window.innerHeight - 54,
+        width: Math.min(340, window.innerWidth - 36),
+        height: 36
+      });
+    }
+
+    function zoomWindow() {
+      if (terminal.classList.contains("is-closed")) return;
+      if (isMinimized) {
+        restoreWindow();
+        return;
+      }
+
+      if (isZoomed) {
+        if (savedRect) setRect(savedRect);
+        terminal.classList.remove("is-zoomed");
+        isZoomed = false;
+        return;
+      }
+
+      savedRect = rectSnapshot();
+      isZoomed = true;
+      terminal.classList.add("is-zoomed");
+      setRect({
+        left: 18,
+        top: 18,
+        width: window.innerWidth - 36,
+        height: window.innerHeight - 36
+      });
+    }
+
+    document.querySelectorAll("[data-window-action]").forEach((button) => {
+      button.addEventListener("pointerdown", (event) => {
+        event.stopPropagation();
+        focusWindow();
+      });
+
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const action = button.dataset.windowAction;
+        if (action === "close") closeWindow();
+        if (action === "minimize") minimizeWindow();
+        if (action === "zoom") zoomWindow();
+      });
+    });
+
     titlebar.addEventListener("pointerdown", (event) => {
+      if (event.target.closest("[data-window-action]")) return;
+      focusWindow();
+      if (isMinimized) restoreWindow();
       const rect = terminal.getBoundingClientRect();
       drag = {
         pointerId: event.pointerId,
@@ -264,6 +416,11 @@ function pageHtml() {
       terminal.classList.add("is-dragging");
       titlebar.setPointerCapture(event.pointerId);
       placeAt(rect.left, rect.top);
+    });
+
+    titlebar.addEventListener("dblclick", (event) => {
+      if (event.target.closest("[data-window-action]")) return;
+      zoomWindow();
     });
 
     titlebar.addEventListener("pointermove", (event) => {
@@ -281,6 +438,16 @@ function pageHtml() {
     titlebar.addEventListener("pointercancel", stopDrag);
 
     window.addEventListener("resize", () => {
+      if (isZoomed) {
+        setRect({
+          left: 18,
+          top: 18,
+          width: window.innerWidth - 36,
+          height: window.innerHeight - 36
+        });
+        return;
+      }
+
       const rect = terminal.getBoundingClientRect();
       placeAt(rect.left, rect.top);
     });
