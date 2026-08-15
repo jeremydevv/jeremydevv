@@ -2,7 +2,33 @@ const SITE_TITLE = "Jeremy K. Mathew";
 const SITE_DESCRIPTION =
   "Software engineer building fast, reliable products across cloud, web, and applied AI systems.";
 
-function pageHtml() {
+const FAST_FLAGS = {
+  terminalPortfolioHomepage: {
+    key: "terminalPortfolioHomepage",
+    owner: "jeremydevv",
+    surface: "homepage",
+    createdAt: "2026-08-15",
+    expiresAt: "2026-09-12",
+    fallback: "classicHomepage",
+    defaultEnabled: true
+  }
+};
+
+function flagOverride(url, key) {
+  const value = url.searchParams.get("ff_" + key);
+  if (value === "0" || value === "false" || value === "off") return false;
+  if (value === "1" || value === "true" || value === "on") return true;
+  return null;
+}
+
+function isFastFlagEnabled(url, key) {
+  const metadata = FAST_FLAGS[key];
+  if (!metadata) return false;
+  const override = flagOverride(url, key);
+  return override ?? metadata.defaultEnabled;
+}
+
+function terminalHomepageHtml() {
   const canonical = "https://jeremy.md/";
 
   return `<!doctype html>
@@ -80,8 +106,8 @@ function pageHtml() {
       position: absolute;
       left: 50%;
       top: 50%;
-      width: clamp(340px, 31vw, 560px);
-      height: clamp(250px, 31vh, 380px);
+      width: min(clamp(340px, 31vw, 560px), calc(100vw - 24px));
+      height: min(clamp(250px, 31vh, 380px), calc(100vh - 24px));
       border: 1px solid rgba(236, 232, 216, 0.14);
       border-radius: 10px;
       background: var(--terminal);
@@ -248,11 +274,20 @@ function pageHtml() {
 
       .terminal {
         width: min(88vw, 420px);
-        height: 32vh;
+        height: min(32vh, calc(100vh - 24px));
       }
 
       .shell {
         padding: 16px;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .terminal {
+        transition: none;
+      }
+
+      .cursor {
+        animation: none;
       }
     }
   </style>
@@ -260,7 +295,7 @@ function pageHtml() {
 <body>
   <main class="desktop" aria-label="Movable desktop portfolio">
     <section class="terminal is-focused" id="terminal" aria-label="Jeremy portfolio terminal">
-      <header class="titlebar" id="titlebar" aria-label="Drag terminal window">
+      <header class="titlebar" id="titlebar" tabindex="0" aria-label="Drag terminal window" aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight Shift+ArrowUp Shift+ArrowDown Shift+ArrowLeft Shift+ArrowRight Enter Space">
         <div class="lights" aria-label="Window controls">
           <button class="light red" type="button" data-window-action="close" aria-label="Close"></button>
           <button class="light yellow" type="button" data-window-action="minimize" aria-label="Minimize"></button>
@@ -330,6 +365,11 @@ function pageHtml() {
       terminal.style.width = rect.width + "px";
       terminal.style.height = rect.height + "px";
       placeAt(rect.left, rect.top);
+    }
+
+    function moveBy(deltaX, deltaY) {
+      const rect = terminal.getBoundingClientRect();
+      placeAt(rect.left + deltaX, rect.top + deltaY);
     }
 
     function focusWindow() {
@@ -423,6 +463,30 @@ function pageHtml() {
       zoomWindow();
     });
 
+    titlebar.addEventListener("keydown", (event) => {
+      const step = event.shiftKey ? 48 : 16;
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        moveBy(-step, 0);
+      }
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        moveBy(step, 0);
+      }
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        moveBy(0, -step);
+      }
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        moveBy(0, step);
+      }
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        zoomWindow();
+      }
+    });
+
     titlebar.addEventListener("pointermove", (event) => {
       if (!drag || event.pointerId !== drag.pointerId) return;
       placeAt(event.clientX - drag.offsetX, event.clientY - drag.offsetY);
@@ -456,6 +520,103 @@ function pageHtml() {
 </html>`;
 }
 
+function classicHomepageHtml(url) {
+  const canonical = "https://jeremy.md/";
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${SITE_TITLE}</title>
+  <meta name="description" content="${SITE_DESCRIPTION}">
+  <link rel="canonical" href="${canonical}">
+  <meta property="og:title" content="${SITE_TITLE}">
+  <meta property="og:description" content="${SITE_DESCRIPTION}">
+  <meta property="og:url" content="${canonical}">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#101417">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101417;
+      --panel: #171d21;
+      --text: #edf2f4;
+      --muted: #a8b3b8;
+      --line: #2a3338;
+      --accent: #74d3ae;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+      color: var(--text);
+      background:
+        linear-gradient(145deg, rgba(116, 211, 174, 0.10), transparent 34rem),
+        var(--bg);
+    }
+
+    main {
+      width: min(960px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 72px 0;
+    }
+
+    h1 {
+      max-width: 820px;
+      margin: 0;
+      font-size: clamp(3rem, 9vw, 7.5rem);
+      line-height: 0.92;
+      letter-spacing: 0;
+    }
+
+    .lede {
+      max-width: 680px;
+      margin: 28px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.1rem, 2vw, 1.35rem);
+    }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 36px;
+    }
+
+    .links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      background: rgba(23, 29, 33, 0.72);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Jeremy K. Mathew</h1>
+    <p class="lede">${SITE_DESCRIPTION}</p>
+    <nav class="links" aria-label="Primary links">
+      <a href="https://github.com/jeremydevv">GitHub</a>
+      <a href="mailto:jeremymathewgithub@outlook.com">Email</a>
+      <a href="${new URL("/status", url).toString()}">Status</a>
+    </nav>
+  </main>
+</body>
+</html>`;
+}
+
 function securityHeaders() {
   return {
     "content-type": "text/html; charset=utf-8",
@@ -484,7 +645,10 @@ export default {
       return Response.redirect(new URL("/", url), 302);
     }
 
-    return new Response(pageHtml(), {
+    const enabled = isFastFlagEnabled(url, "terminalPortfolioHomepage");
+    const html = enabled ? terminalHomepageHtml() : classicHomepageHtml(url);
+
+    return new Response(html, {
       headers: securityHeaders()
     });
   }
