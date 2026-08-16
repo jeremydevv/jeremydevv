@@ -43,22 +43,22 @@ function terminalHomepageHtml() {
   <meta property="og:description" content="${SITE_DESCRIPTION}">
   <meta property="og:url" content="${canonical}">
   <meta property="og:type" content="website">
-  <meta name="theme-color" content="#171714">
+  <meta name="theme-color" content="#111827">
   <style>
     :root {
       color-scheme: dark;
-      --chalk: #171714;
-      --chalk-soft: #1f1f1b;
-      --terminal: #20211d;
-      --terminal-top: #2c2d28;
-      --line: #3a3a33;
-      --text: #ece8d8;
-      --muted: #aaa590;
-      --command: #d8d0af;
+      --chalk: #111827;
+      --chalk-soft: #172033;
+      --terminal: #18212f;
+      --terminal-top: #253247;
+      --line: #394a62;
+      --text: #e5e7eb;
+      --muted: #a5b4c8;
+      --command: #a5c7f5;
       --green: #72c76e;
       --yellow: #d7b65d;
       --red: #d96b5f;
-      --shadow: rgba(0, 0, 0, 0.34);
+      --shadow: rgba(2, 6, 23, 0.48);
     }
 
     * {
@@ -92,14 +92,14 @@ function terminalHomepageHtml() {
       top: 50%;
       width: min(clamp(340px, 31vw, 560px), calc(100vw - 24px));
       height: min(clamp(250px, 31vh, 380px), calc(100vh - 24px));
-      border: 1px solid rgba(236, 232, 216, 0.14);
+      border: 1px solid rgba(229, 231, 235, 0.14);
       border-radius: 10px;
       background: var(--terminal);
       box-shadow: 0 18px 42px var(--shadow);
       transform: translate(-50%, -50%);
       overflow: hidden;
       user-select: none;
-      transition: box-shadow 150ms ease, opacity 120ms ease;
+      transition: box-shadow 150ms ease, opacity 220ms ease;
     }
 
     .terminal.is-dragging {
@@ -108,7 +108,7 @@ function terminalHomepageHtml() {
     }
 
     .terminal.is-focused {
-      border-color: rgba(236, 232, 216, 0.2);
+      border-color: rgba(229, 231, 235, 0.2);
       box-shadow: 0 22px 56px rgba(0, 0, 0, 0.42);
     }
 
@@ -132,8 +132,8 @@ function terminalHomepageHtml() {
       align-items: center;
       height: 36px;
       padding: 0 12px;
-      border-bottom: 1px solid rgba(236, 232, 216, 0.09);
-      background: linear-gradient(var(--terminal-top), #262722);
+      border-bottom: 1px solid rgba(229, 231, 235, 0.09);
+      background: linear-gradient(var(--terminal-top), #202c3e);
       cursor: grab;
       touch-action: none;
     }
@@ -155,7 +155,7 @@ function terminalHomepageHtml() {
       border: 0;
       border-radius: 50%;
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.22);
-      color: rgba(40, 28, 22, 0);
+      color: rgba(15, 23, 42, 0);
       font: 700 8px/12px ui-sans-serif, system-ui, sans-serif;
       text-align: center;
       cursor: default;
@@ -175,7 +175,7 @@ function terminalHomepageHtml() {
 
     .lights:hover .light,
     .light:focus-visible {
-      color: rgba(40, 28, 22, 0.74);
+      color: rgba(15, 23, 42, 0.74);
       outline: none;
     }
 
@@ -200,7 +200,7 @@ function terminalHomepageHtml() {
 
     .title {
       justify-self: center;
-      color: #c7c1ac;
+      color: #cbd5e1;
       font-size: 0.77rem;
     }
 
@@ -211,7 +211,7 @@ function terminalHomepageHtml() {
       line-height: 1.68;
       overflow: auto;
       scrollbar-width: thin;
-      scrollbar-color: rgba(236, 232, 216, 0.34) transparent;
+      scrollbar-color: rgba(229, 231, 235, 0.34) transparent;
       white-space: pre-wrap;
     }
 
@@ -227,12 +227,12 @@ function terminalHomepageHtml() {
       min-height: 32px;
       border: 3px solid transparent;
       border-radius: 999px;
-      background: rgba(236, 232, 216, 0.34);
+      background: rgba(229, 231, 235, 0.34);
       background-clip: content-box;
     }
 
     .shell::-webkit-scrollbar-thumb:hover {
-      background-color: rgba(236, 232, 216, 0.52);
+      background-color: rgba(229, 231, 235, 0.52);
     }
 
     .prompt {
@@ -311,14 +311,11 @@ function terminalHomepageHtml() {
         <div aria-hidden="true"></div>
       </header>
       <div class="shell">
-<span class="prompt">jeremy@portfolio ~ %</span> <span class="command">whoami</span>
-<span class="output">Jeremy Mathew</span>
-
-<span class="prompt">jeremy@portfolio ~ %</span> <span class="command">ls focus</span>
-<span class="output">cloud-platforms   product-engineering   applied-ai</span>
-
-<span class="prompt">jeremy@portfolio ~ %</span> <span class="command">open links</span>
-<span class="output"><a href="https://github.com/jeremydevv">github</a>   <a href="mailto:jeremymathewgithub@outlook.com">email</a>   <a href="/status">status</a></span>
+<span class="prompt">jeremy@portfolio ~ %</span> <span class="command">help</span>
+<span class="output">available commands:
+  whoami      show identity
+  ls focus    show areas of focus
+  open links  show github, email, and status</span>
 
 <span class="prompt">jeremy@portfolio ~ %</span><span class="cursor" aria-hidden="true"></span>
       </div>
@@ -331,6 +328,7 @@ function terminalHomepageHtml() {
     let savedRect = null;
     let isZoomed = false;
     let isMinimized = false;
+    let closeRestoreTimer = null;
 
     function clamp(value, min, max) {
       return Math.min(Math.max(value, min), max);
@@ -390,8 +388,32 @@ function terminalHomepageHtml() {
       focusWindow();
     }
 
+    function resetToCenteredWindow() {
+      terminal.classList.remove("is-dragging", "is-minimized", "is-zoomed");
+      terminal.style.transform = "";
+      terminal.style.left = "";
+      terminal.style.top = "";
+      terminal.style.width = "";
+      terminal.style.height = "";
+      drag = null;
+      savedRect = null;
+      isMinimized = false;
+      isZoomed = false;
+    }
+
+    function restoreClosedWindow() {
+      closeRestoreTimer = null;
+      resetToCenteredWindow();
+      focusWindow();
+      requestAnimationFrame(() => {
+        terminal.classList.remove("is-closed");
+      });
+    }
+
     function closeWindow() {
+      clearTimeout(closeRestoreTimer);
       terminal.classList.add("is-closed");
+      closeRestoreTimer = setTimeout(restoreClosedWindow, 350);
     }
 
     function minimizeWindow() {
