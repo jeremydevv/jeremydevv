@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "jeremy-portfolio",
+  "name": "jeremy-portfolio-development",
   "main": "src/index.js",
   "compatibility_date": "2026-08-15",
   "account_id": "83952a1be987e4a12647732861a60925",
@@ -10,11 +10,18 @@
     "enabled": true
   },
   "vars": {
-    "SITE_URL": "https://jeremy.md"
+    "SITE_URL": "https://dev.jeremy.md"
   },
+  "routes": [
+    {
+      "pattern": "dev.jeremy.md",
+      "zone_name": "jeremy.md",
+      "custom_domain": true
+    }
+  ],
   "env": {
     "production": {
-      "name": "jeremy-portfolio",
+      "name": "jeremy-portfolio-production",
       "workers_dev": false,
       "preview_urls": false,
       "routes": [

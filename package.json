@@ -7,6 +7,7 @@
   },
   "scripts": {
     "check": "wrangler deploy --env=\"\" --dry-run",
+    "check:production": "wrangler deploy --env production --dry-run",
     "deploy": "wrangler deploy --env=\"\"",
     "deploy:production": "wrangler deploy --env production",
     "dev": "wrangler dev --env=\"\"",
