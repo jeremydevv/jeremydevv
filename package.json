@@ -7,9 +7,11 @@
   },
   "scripts": {
     "check": "wrangler deploy --env=\"\" --dry-run",
+    "check:production": "wrangler deploy --env production --dry-run",
     "deploy": "wrangler deploy --env=\"\"",
     "deploy:production": "wrangler deploy --env production",
-    "dev": "wrangler dev --env=\"\""
+    "dev": "wrangler dev --env=\"\"",
+    "test": "node --test"
   },
   "devDependencies": {
     "wrangler": "4.123.0"

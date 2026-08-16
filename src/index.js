@@ -1,4 +1,4 @@
-const SITE_TITLE = "Jeremy K. Mathew";
+const SITE_TITLE = "Jeremy Mathew";
 const SITE_DESCRIPTION =
   "Software engineer building fast, reliable products across cloud, web, and applied AI systems.";
 
@@ -76,24 +76,8 @@ function terminalHomepageHtml() {
       min-height: 100vh;
       overflow: hidden;
       color: var(--text);
-      background:
-        radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.035), transparent 18rem),
-        radial-gradient(circle at 78% 70%, rgba(215, 182, 93, 0.035), transparent 22rem),
-        linear-gradient(135deg, var(--chalk), #12120f);
+      background: var(--chalk);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-    }
-
-    body::before {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      content: "";
-      opacity: 0.18;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
-      background-size: 7px 7px, 11px 11px;
-      mix-blend-mode: soft-light;
     }
 
     .desktop {
@@ -226,7 +210,29 @@ function terminalHomepageHtml() {
       font-size: clamp(0.78rem, 1.05vw, 0.96rem);
       line-height: 1.68;
       overflow: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(236, 232, 216, 0.34) transparent;
       white-space: pre-wrap;
+    }
+
+    .shell::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .shell::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .shell::-webkit-scrollbar-thumb {
+      min-height: 32px;
+      border: 3px solid transparent;
+      border-radius: 999px;
+      background: rgba(236, 232, 216, 0.34);
+      background-clip: content-box;
+    }
+
+    .shell::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(236, 232, 216, 0.52);
     }
 
     .prompt {
@@ -306,7 +312,7 @@ function terminalHomepageHtml() {
       </header>
       <div class="shell">
 <span class="prompt">jeremy@portfolio ~ %</span> <span class="command">whoami</span>
-<span class="output">Jeremy K. Mathew</span>
+<span class="output">Jeremy Mathew</span>
 
 <span class="prompt">jeremy@portfolio ~ %</span> <span class="command">ls focus</span>
 <span class="output">cloud-platforms   product-engineering   applied-ai</span>
@@ -605,7 +611,7 @@ function classicHomepageHtml(url) {
 </head>
 <body>
   <main>
-    <h1>Jeremy K. Mathew</h1>
+    <h1>Jeremy Mathew</h1>
     <p class="lede">${SITE_DESCRIPTION}</p>
     <nav class="links" aria-label="Primary links">
       <a href="https://github.com/jeremydevv">GitHub</a>
