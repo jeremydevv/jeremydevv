@@ -1,17 +1,24 @@
 :root {
   color-scheme: dark;
-  --chalk: #111827;
-  --chalk-soft: #172033;
-  --terminal: #18212f;
-  --terminal-top: #253247;
-  --line: #394a62;
-  --text: #e5e7eb;
-  --muted: #a5b4c8;
-  --command: #a5c7f5;
-  --green: #72c76e;
-  --yellow: #d7b65d;
-  --red: #d96b5f;
-  --shadow: rgba(2, 6, 23, 0.48);
+  /* Terminal.app Basic dark profile, extracted by enihsyou/basic-dark.conf. */
+  --chalk: #1e1e1e;
+  --chalk-soft: #1e1e1e;
+  --terminal: #1e1e1e;
+  --terminal-top: #2b2b2b;
+  --line: #363636;
+  --text: #ffffff;
+  --muted: #ffffff;
+  --command: #ffffff;
+  --cursor: #9d9d9d;
+  --selection: #3f638b;
+  --ansi-red: #d6492e;
+  --ansi-green: #42c732;
+  --ansi-yellow: #b8b72f;
+  --ansi-blue: #6a42f6;
+  --window-red: #ff5f57;
+  --window-yellow: #febc2e;
+  --window-green: #28c840;
+  --shadow: rgba(0, 0, 0, 0.42);
 }
 
 * {
@@ -47,10 +54,10 @@ body {
   top: 50%;
   width: min(clamp(340px, 31vw, 560px), calc(100vw - 24px));
   height: min(clamp(250px, 31vh, 380px), calc(100vh - 24px));
-  border: 1px solid rgba(229, 231, 235, 0.14);
-  border-radius: 10px;
+  border: 1px solid #3a3a3a;
+  border-radius: 7px;
   background: var(--terminal);
-  box-shadow: 0 18px 42px var(--shadow);
+  box-shadow: 0 16px 40px var(--shadow);
   transform: translate(-50%, -50%);
   overflow: hidden;
   user-select: none;
@@ -65,13 +72,13 @@ body {
 }
 
 .terminal.is-focused {
-  border-color: rgba(229, 231, 235, 0.2);
-  box-shadow: 0 22px 56px rgba(0, 0, 0, 0.42);
+  border-color: #4a4a4a;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.5);
 }
 
 .terminal.is-minimized {
-  height: 36px;
-  min-height: 36px;
+  height: 28px;
+  min-height: 28px;
 }
 
 .terminal.is-minimized .shell {
@@ -87,10 +94,10 @@ body {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  height: 36px;
+  height: 28px;
   padding: 0 12px;
-  border-bottom: 1px solid rgba(229, 231, 235, 0.09);
-  background: linear-gradient(var(--terminal-top), #202c3e);
+  border-bottom: 1px solid #3a3a3a;
+  background: linear-gradient(#303030, var(--terminal-top));
   cursor: grab;
   touch-action: none;
 }
@@ -111,29 +118,33 @@ body {
   padding: 0;
   border: 0;
   border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.22);
-  color: rgba(15, 23, 42, 0);
-  font: 700 8px/12px ui-sans-serif, system-ui, sans-serif;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.28);
+  color: transparent;
+  font: 700 9px/12px -apple-system, BlinkMacSystemFont, sans-serif;
   text-align: center;
   cursor: default;
 }
 
 .light.red {
-  background: var(--red);
+  background: var(--window-red);
 }
 
 .light.yellow {
-  background: var(--yellow);
+  background: var(--window-yellow);
 }
 
 .light.green {
-  background: var(--green);
+  background: var(--window-green);
 }
 
-.lights:hover .light,
+.lights.is-revealed .light,
 .light:focus-visible {
-  color: rgba(15, 23, 42, 0.74);
+  color: rgba(0, 0, 0, 0.58);
   outline: none;
+}
+
+.light:active {
+  filter: brightness(0.86);
 }
 
 .light::before {
@@ -151,21 +162,21 @@ body {
 }
 
 .light.green::before {
-  content: "+";
+  content: "↗";
   transform: translateY(-0.5px);
 }
 
 .title {
   justify-self: center;
-  color: #cbd5e1;
-  font-size: 0.77rem;
+  color: #b7b7b7;
+  font: 12px/1 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
 }
 
 .shell {
-  height: calc(100% - 36px);
-  padding: 18px 20px 22px;
-  font-size: clamp(0.78rem, 1.05vw, 0.96rem);
-  line-height: 1.68;
+  height: calc(100% - 28px);
+  padding: 12px 14px 16px;
+  font-size: clamp(0.78rem, 1.05vw, 0.9rem);
+  line-height: 1.55;
   overflow: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(229, 231, 235, 0.34) transparent;
@@ -190,6 +201,11 @@ body {
 
 .shell::-webkit-scrollbar-thumb:hover {
   background-color: rgba(229, 231, 235, 0.52);
+}
+
+.shell ::selection {
+  color: var(--text);
+  background: var(--selection);
 }
 
 .prompt,
@@ -217,7 +233,7 @@ body {
   height: 1.05em;
   margin-left: 2px;
   vertical-align: -0.16em;
-  background: var(--text);
+  background: var(--cursor);
   animation: blink 1.1s steps(2, start) infinite;
 }
 

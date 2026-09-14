@@ -26,6 +26,23 @@ afterEach(() => {
 });
 
 describe("TerminalWindow", () => {
+  it("reveals traffic-light symbols only while their group is hovered", () => {
+    render(
+      <TerminalWindow>
+        <span>content</span>
+      </TerminalWindow>
+    );
+    const controls = screen.getByLabelText("Window controls");
+
+    expect(controls).not.toHaveClass("is-revealed");
+
+    fireEvent.pointerEnter(controls);
+    expect(controls).toHaveClass("is-revealed");
+
+    fireEvent.pointerLeave(controls);
+    expect(controls).not.toHaveClass("is-revealed");
+  });
+
   it("minimizes, restores, zooms, and restores after close", async () => {
     vi.useFakeTimers();
     render(

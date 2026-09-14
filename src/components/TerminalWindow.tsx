@@ -46,6 +46,7 @@ export function TerminalWindow({ children }: PropsWithChildren) {
   const [isClosed, setIsClosed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isFocused, setIsFocused] = useState(true);
+  const [isControlsHovered, setIsControlsHovered] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
 
@@ -269,7 +270,13 @@ export function TerminalWindow({ children }: PropsWithChildren) {
         onPointerMove={handlePointerMove}
         onPointerUp={stopDrag}
       >
-        <div className="lights" aria-label="Window controls">
+        <div
+          className={`lights${isControlsHovered ? " is-revealed" : ""}`}
+          role="group"
+          aria-label="Window controls"
+          onPointerEnter={() => setIsControlsHovered(true)}
+          onPointerLeave={() => setIsControlsHovered(false)}
+        >
           <button
             className="light red"
             type="button"
