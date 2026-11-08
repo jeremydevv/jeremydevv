@@ -1,0 +1,30 @@
+name: Portfolio validation
+
+on:
+  push:
+    branches: [development]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portfolio-validation-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate portfolio
+    runs-on: [self-hosted, Linux, X64, jeremy-portfolio-isolated]
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Validate and build
+        run: npm run check:production
