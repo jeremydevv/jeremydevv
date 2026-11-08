@@ -8,15 +8,17 @@
   "scripts": {
     "build": "vite build",
     "build:production": "CLOUDFLARE_ENV=production vite build",
-    "check": "npm run typecheck && npm test && npm run build",
-    "check:production": "npm run typecheck && npm test && npm run build:production",
+    "check": "npm run flags:check && npm run test:flags && npm run typecheck && npm test && npm run build",
+    "check:production": "npm run flags:check && npm run test:flags && npm run typecheck && npm test && npm run build:production",
     "deploy": "npm run build && wrangler deploy",
     "deploy:production": "npm run build:production && wrangler deploy",
     "dev": "vite",
     "preview": "vite preview",
     "test": "vitest run --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "flags:check": "node scripts/check-fast-flags.mjs",
+    "test:flags": "node --test scripts/check-fast-flags.test.mjs"
   },
   "dependencies": {
     "react": "19.2.8",

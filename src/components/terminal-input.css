@@ -1,0 +1,63 @@
+.terminal-line {
+  position: relative;
+}
+
+.terminal-line > .terminal-input-wrap {
+  position: relative;
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.terminal-prompt-rail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.terminal-cell-probe {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.terminal-line > .terminal-input-wrap > .terminal-textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 1lh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  resize: none;
+  overflow: hidden;
+  color: var(--text);
+  background: transparent;
+  caret-color: var(--cursor);
+  font: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-indent: var(
+    --terminal-prompt-indent,
+    calc(21 * (1ch + var(--terminal-tracking, 0px)))
+  );
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.terminal-line > .terminal-input-wrap >
+  .terminal-textarea[data-block-caret-visible="true"] {
+  caret-color: transparent;
+}
+
+.terminal-line > .terminal-input-wrap > .terminal-caret {
+  left: calc(
+    var(--terminal-caret-prefix, 0px) +
+      var(--terminal-caret-column, 0) *
+      (1ch + var(--terminal-tracking, 0px)) -
+      var(--terminal-input-scroll-left, 0px)
+  );
+}

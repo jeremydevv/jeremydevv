@@ -57,6 +57,9 @@ describe("portfolio Worker", () => {
     expect(response.headers.get("content-security-policy")).toContain(
       "script-src 'self'"
     );
+    expect(response.headers.get("content-security-policy")).toContain(
+      "font-src 'self'"
+    );
   });
 
   it("serves generated assets through the asset binding", async () => {

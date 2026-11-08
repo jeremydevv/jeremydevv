@@ -1,26 +1,47 @@
-export const FAST_FLAGS = {
-  terminalPortfolioHomepage: {
-    key: "terminalPortfolioHomepage",
-    owner: "jeremydevv",
-    surface: "homepage",
-    createdAt: "2026-08-15",
-    expiresAt: "2026-09-12",
-    fallback: "classicHomepage",
-    defaultEnabled: true
-  }
-} as const;
+import { FAST_FLAGS, type FastFlagKey } from "./lib/flags/registry";
 
-export type FastFlagKey = keyof typeof FAST_FLAGS;
+export { FAST_FLAGS };
+export type { FastFlagKey };
 
-export function isFastFlagEnabled(url: URL, key: FastFlagKey): boolean {
-  const value = url.searchParams.get(`ff_${key}`);
+/**
+ * This is the active rollout, not an extension of the expired 2026-09-12
+ * `terminalPortfolioHomepage` flag.
+ */
+// fast-flag-use: terminalPortfolioHomepageV3
+export const terminalPortfolioHomepageFlag = "terminalPortfolioHomepageV3" as const;
 
-  if (value === "0" || value === "false" || value === "off") {
+const legacyTerminalPortfolioHomepageQueries = ["terminalPortfolioHomepage", "terminalPortfolioHomepageV2"];
+
+function booleanOverride(value: string | null): boolean | undefined {
+  if (["0", "false", "off"].includes(value ?? "")) {
     return false;
   }
 
-  if (value === "1" || value === "true" || value === "on") {
+  if (["1", "true", "on"].includes(value ?? "")) {
     return true;
+  }
+
+  return undefined;
+}
+
+/**
+ * Homepage-only local switch. It does not call a remote provider: Flagship is
+ * intentionally unconfigured until a real application and binding are
+ * provisioned. The old query parameter remains a one-way compatibility escape
+ * hatch: it may select the safe classic fallback, never re-enable an expired
+ * rollout.
+ */
+export function isFastFlagEnabled(url: URL, key: FastFlagKey): boolean {
+  const versionedOverride = booleanOverride(url.searchParams.get(`ff_${key}`));
+  if (versionedOverride !== undefined) {
+    return versionedOverride;
+  }
+
+  const legacyDisabled = legacyTerminalPortfolioHomepageQueries.some((key) =>
+    booleanOverride(url.searchParams.get(`ff_${key}`)) === false
+  );
+  if (legacyDisabled) {
+    return false;
   }
 
   return FAST_FLAGS[key].defaultEnabled;
