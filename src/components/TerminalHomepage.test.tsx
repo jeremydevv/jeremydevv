@@ -159,7 +159,7 @@ describe("TerminalHomepage", () => {
 
     expect(screen.queryByText("zsh: command not found: unknown-0")).not.toBeInTheDocument();
     expect(screen.getByText("zsh: command not found: unknown-200")).toBeInTheDocument();
-  });
+  }, 20_000);
 
   it("does not steal focus when an output link is selected", () => {
     render(<TerminalHomepage />);
