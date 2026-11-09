@@ -15,6 +15,15 @@ export interface FastFlagMetadata {
 }
 
 export const FAST_FLAGS = {
+  productionDelivery: {
+    key: "productionDelivery",
+    owner: "jeremydevv",
+    surface: "production Worker delivery",
+    createdAt: "2026-11-09",
+    expiresAt: "2026-12-07",
+    fallback: "do not deploy",
+    defaultEnabled: false
+  },
   terminalTextZoom: {
     key: "terminalTextZoom",
     owner: "jeremydevv",
