@@ -105,4 +105,4 @@ jobs:
           npx wrangler versions upload --config dist/jeremy_portfolio_development/wrangler.json --tag "$version_tag"
           current_main="$(git ls-remote https://github.com/jeremydevv/jeremydevv.git refs/heads/main | cut -f1)"
           test "$current_main" = "$GITHUB_SHA" || { echo 'Production source changed after upload; version was not deployed' >&2; exit 1; }
-          npx wrangler versions deploy --config dist/jeremy_portfolio_development/wrangler.json --version-tag "$version_tag" --percentage 100 --yes
+          npx wrangler versions deploy --config dist/jeremy_portfolio_development/wrangler.json --version-tag "${version_tag}@100" --yes
