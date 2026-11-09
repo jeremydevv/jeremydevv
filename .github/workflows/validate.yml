@@ -75,7 +75,7 @@ jobs:
           tar -xzf portfolio-production.tgz
           test "$(cat dist/source-commit.txt)" = "$GITHUB_SHA"
           node scripts/verify-production-bundle.mjs
-          npx wrangler deploy --config dist/jeremy_portfolio_development/wrangler.json --dry-run
+          npx wrangler versions upload --config dist/jeremy_portfolio_development/wrangler.json --dry-run
       - name: Verify production environment protection
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -91,4 +91,8 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Missing production Cloudflare token' >&2; exit 1; }
           current_main="$(git ls-remote https://github.com/jeremydevv/jeremydevv.git refs/heads/main | cut -f1)"
           test "$current_main" = "$GITHUB_SHA" || { echo 'Production source is no longer the current main commit' >&2; exit 1; }
-          npx wrangler deploy --config dist/jeremy_portfolio_development/wrangler.json
+          version_tag="gha-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          npx wrangler versions upload --config dist/jeremy_portfolio_development/wrangler.json --tag "$version_tag"
+          current_main="$(git ls-remote https://github.com/jeremydevv/jeremydevv.git refs/heads/main | cut -f1)"
+          test "$current_main" = "$GITHUB_SHA" || { echo 'Production source changed after upload; version was not deployed' >&2; exit 1; }
+          npx wrangler versions deploy --config dist/jeremy_portfolio_development/wrangler.json --version-tag "$version_tag" --percentage 100 --yes
