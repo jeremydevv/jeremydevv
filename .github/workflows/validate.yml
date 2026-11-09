@@ -49,10 +49,22 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+  publisher-readiness:
+    name: Verify isolated publisher
+    runs-on: [self-hosted, Linux, X64, jeremy-portfolio-publisher]
+    timeout-minutes: 5
+    steps:
+      - name: Verify publisher isolation
+        run: |
+          test "$(id -u)" != 0
+          test ! -S /var/run/docker.sock
+          test "$(awk '/CapEff/ {print $2}' /proc/self/status)" = 0000000000000000
+          node --version
+
   deploy-production:
     name: Deploy production
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'jeremydevv/jeremydevv'
-    needs: validate
+    needs: [validate, publisher-readiness]
     environment:
       name: production
       url: https://jeremy.md
