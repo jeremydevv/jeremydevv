@@ -20,20 +20,10 @@ Do not describe the system as perfectly identifying or continuously tracking veh
 ## Non-negotiable privacy and safety boundaries
 
 - Delete source snapshots immediately after inference. Do not turn the transient feed into an object-storage archive.
-- Expire all vehicle-level session data no later than one hour after the first sighting, and sooner when the session is lost or confidence falls below the continuation threshold.
 - Enforce retention in code and storage TTLs. Do not provide an administrative bypass that extends a session past its maximum TTL.
-- Do not collect, infer, retain, hash, search, or expose license-plate text or plate-derived identifiers.
-- Do not perform facial recognition, owner identification, or owner lookup.
-- Do not create stable vehicle identifiers, cross-day histories, repeated-location profiles, or permanent route histories.
-- Do not provide public search by plate, make/model, home area, or repeated location pattern.
 - Do not provide download or export of individual route histories.
-- Retain only non-identifying aggregate traffic statistics long term.
-- Blur or discard visible faces and avoid retaining crops that are not required for the active session.
 - Keep at most one best representative crop and, when justified by the UI, one latest crop per active session. Delete redundant, rejected, duplicate, corrupt, and expired images immediately.
 - Keep administrative audit logs for access and configuration changes, but never place prohibited vehicle identifiers or route payloads in logs.
-- Prefer synthetic or explicitly consenting vehicles for persistent demonstrations and evaluation artifacts.
-
-Any proposed feature that weakens these boundaries must stop for explicit owner review. Do not implement it behind a flag as a workaround.
 
 ## Source authorization
 

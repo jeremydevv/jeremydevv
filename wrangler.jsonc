@@ -1,13 +1,17 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "jeremy-portfolio-development",
-  "main": "src/index.js",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-08-15",
   "account_id": "83952a1be987e4a12647732861a60925",
   "workers_dev": true,
   "preview_urls": true,
   "observability": {
     "enabled": true
+  },
+  "assets": {
+    "binding": "ASSETS",
+    "run_worker_first": true
   },
   "vars": {
     "SITE_URL": "https://dev.jeremy.md"

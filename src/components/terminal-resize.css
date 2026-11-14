@@ -1,0 +1,94 @@
+/*
+ * Transparent resize targets sit outside the rendered terminal surface. The
+ * inner surface keeps the original rounded clipping, so targets cannot cover
+ * the title controls, native scrollbar, or selectable shell text.
+ */
+.terminal.terminal {
+  overflow: visible;
+}
+
+.terminal-resize-surface {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  /* The original 15px outer border clips descendants at its 14px inner edge. */
+  border-radius: 14px;
+}
+
+.terminal-resize-targets {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.terminal-resize-target {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.terminal-resize-target-n,
+.terminal-resize-target-s {
+  right: 8px;
+  left: 8px;
+  height: 8px;
+  cursor: ns-resize;
+}
+
+.terminal-resize-target-n {
+  top: -8px;
+}
+
+.terminal-resize-target-s {
+  bottom: -8px;
+}
+
+.terminal-resize-target-e,
+.terminal-resize-target-w {
+  top: 8px;
+  bottom: 8px;
+  width: 8px;
+  cursor: ew-resize;
+}
+
+.terminal-resize-target-e {
+  right: -8px;
+}
+
+.terminal-resize-target-w {
+  left: -8px;
+}
+
+.terminal-resize-target-nw,
+.terminal-resize-target-ne,
+.terminal-resize-target-se,
+.terminal-resize-target-sw {
+  width: 8px;
+  height: 8px;
+}
+
+.terminal-resize-target-nw {
+  top: -8px;
+  left: -8px;
+  cursor: nwse-resize;
+}
+
+.terminal-resize-target-ne {
+  top: -8px;
+  right: -8px;
+  cursor: nesw-resize;
+}
+
+.terminal-resize-target-se {
+  right: -8px;
+  bottom: -8px;
+  cursor: nwse-resize;
+}
+
+.terminal-resize-target-sw {
+  bottom: -8px;
+  left: -8px;
+  cursor: nesw-resize;
+}
